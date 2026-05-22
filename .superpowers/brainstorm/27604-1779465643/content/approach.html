@@ -1,0 +1,58 @@
+<h2>Чем будем строить?</h2>
+<p class="subtitle">Три варианта — с разными трейдоффами</p>
+
+<div class="cards">
+  <div class="card" data-choice="swift-appkit" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;border-radius:8px;padding:16px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+      <div style="text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;">🍎</div>
+        <div style="color:#58a6ff;font-family:monospace;font-size:13px;">Swift + AppKit</div>
+        <div style="color:#8b949e;font-size:11px;margin-top:4px;">swiftc → .app bundle</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Swift + AppKit <span style="font-size:11px;background:#238636;color:#fff;padding:2px 6px;border-radius:10px;margin-left:6px;">Рекомендую</span></h3>
+      <p>Пишем на Swift, компилируем через CLI без Xcode IDE. NSTextView — нативный macOS-редактор с автозаменой, спеллчекером и всем что надо из коробки. Итог: бинарник ~1-2MB, настоящая Mac-апка.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Всё нативное</li><li>Tiny size</li><li>Autocorrect из коробки</li><li>Быстрый старт</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Нужно немного Swift</li><li>Без Xcode — .app bundlе вручную</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="tauri" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;border-radius:8px;padding:16px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+      <div style="text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;">🦀</div>
+        <div style="color:#ffa657;font-family:monospace;font-size:13px;">Tauri 2</div>
+        <div style="color:#8b949e;font-size:11px;margin-top:4px;">Rust + HTML/CSS/JS</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Tauri 2</h3>
+      <p>Rust бэкенд + WebKit2 рендерит HTML-интерфейс. Популярный стек для десктопных апок. Надо ставить Rust + Node. Размер ~8-15MB. UI пишется как веб-страница.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Веб-стек (знакомо)</li><li>Красивый UI легко</li><li>Активное сообщество</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>Надо ставить Rust</li><li>Overkill для блокнота</li><li>Autocorrect — руками</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="electron" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117;border-radius:8px;padding:16px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
+      <div style="text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;">⚡</div>
+        <div style="color:#9ecbff;font-family:monospace;font-size:13px;">Electron</div>
+        <div style="color:#8b949e;font-size:11px;margin-top:4px;">Node + Chromium</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Electron</h3>
+      <p>Node.js + встроенный Chromium. Самый привычный стек для десктопных веб-апок. Но это VS Code / Slack архитектура — финальный размер ~150MB+ для простого блокнота. Жирно.</p>
+      <div class="pros-cons" style="margin-top:8px;">
+        <div class="pros"><h4>Плюсы</h4><ul><li>Самый знакомый стек</li><li>Богатая экосистема</li></ul></div>
+        <div class="cons"><h4>Минусы</h4><ul><li>~150MB для блокнота??</li><li>Медленный старт</li><li>Жрёт память</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<h2>Дизайн апки</h2>
+<p class="subtitle">Вот как это будет выглядеть и работать</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">Notepad — macOS окно</div>
+    <div class="mockup-body" style="padding:0;background:#1e1e1e;border-radius:0 0 8px 8px;">
+      <!-- Title bar -->
+      <div style="background:#2b2b2b;height:36px;display:flex;align-items:center;padding:0 12px;gap:8px;border-radius:0 0 0 0;border-bottom:1px solid #3a3a3a;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#ff5f57;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#febc2e;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#28c840;"></div>
+        <div style="flex:1;text-align:center;color:#888;font-size:12px;font-family:-apple-system,sans-serif;">Notepad</div>
+        <div style="width:36px;"></div>
+      </div>
+      <!-- Text area -->
+      <div style="padding:20px 24px;min-height:280px;font-family:-apple-system,'SF Pro Text',monospace;font-size:14px;color:#d4d4d4;line-height:1.6;white-space:pre-wrap;">встреча завтра в 15:00
+позвонить Кириллу
+---
+https://example.com/some/long/url
+---
+Lorem ipsum без форматирования<span style="border-left:2px solid #58a6ff;margin-left:1px;animation:blink 1s step-end infinite;">​</span>
+      </div>
+    </div>
+  </div>
+  <p style="color:#8b949e;font-size:12px;margin-top:8px;text-align:center;">Всё окно — один большой NSTextView. Больше ничего.</p>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Как работает</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+      <div style="color:#58a6ff;font-size:12px;font-weight:600;margin-bottom:8px;">📋 Режим скрэтчпэда</div>
+      <div style="color:#c9d1d9;font-size:12px;line-height:1.6;">Запускаешь — загружает последний текст. Закрываешь — автосохраняет. Файл живёт в <code style="background:#0d1117;padding:1px 4px;border-radius:3px;">~/Library/Application Support/Notepad/scratch.txt</code></div>
+    </div>
+
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+      <div style="color:#3fb950;font-size:12px;font-weight:600;margin-bottom:8px;">📁 Режим файла</div>
+      <div style="color:#c9d1d9;font-size:12px;line-height:1.6;"><b style="color:#fff;">⌘O</b> — открыть .txt<br><b style="color:#fff;">⌘S</b> — сохранить как .txt<br><b style="color:#fff;">⌘N</b> — вернуться к скрэтчпэду<br>Title bar показывает имя файла</div>
+    </div>
+
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+      <div style="color:#f0883e;font-size:12px;font-weight:600;margin-bottom:8px;">✍️ Текстовый движок</div>
+      <div style="color:#c9d1d9;font-size:12px;line-height:1.6;">NSTextView — нативный. Автозамена, спеллчекер, умные кавычки — всё как в системе. Никаких плагинов не нужно.</div>
+    </div>
+
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;">
+      <div style="color:#a5d6ff;font-size:12px;font-weight:600;margin-bottom:8px;">🎨 Внешний вид</div>
+      <div style="color:#c9d1d9;font-size:12px;line-height:1.6;">Следует системной теме (Light/Dark mode автоматически). Минимальный padding, удобный шрифт, никакого лишнего UI.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;">
+  <h3 style="margin:0 0 10px;">Структура проекта</h3>
+  <div style="font-family:monospace;font-size:12px;color:#c9d1d9;line-height:1.8;">
+    <span style="color:#8b949e;">notepad++/</span><br>
+    &nbsp;&nbsp;<span style="color:#3fb950;">Sources/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#58a6ff;">AppDelegate.swift</span> <span style="color:#6e7681;">— запуск, меню</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#58a6ff;">NotepadWindowController.swift</span> <span style="color:#6e7681;">— окно + NSTextView</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#58a6ff;">FileManager+Scratch.swift</span> <span style="color:#6e7681;">— автосохранение</span><br>
+    &nbsp;&nbsp;<span style="color:#3fb950;">Resources/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#58a6ff;">Info.plist</span><br>
+    &nbsp;&nbsp;<span style="color:#f0883e;">build.sh</span> <span style="color:#6e7681;">— компиляция + упаковка .app</span>
+  </div>
+</div>
