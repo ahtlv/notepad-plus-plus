@@ -109,6 +109,11 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
             hasUnsavedChanges = false
             return true
         } catch {
+            let alert = NSAlert()
+            alert.messageText = "Could not save \"\(url.lastPathComponent)\""
+            alert.informativeText = error.localizedDescription
+            alert.alertStyle = .warning
+            alert.runModal()
             return false
         }
     }

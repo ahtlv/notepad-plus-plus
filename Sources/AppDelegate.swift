@@ -10,6 +10,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         windowController.showWindow(nil)
         windowController.loadScratchpad()
         NSApp.activate(ignoringOtherApps: true)
+
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didResignActiveNotification,
+            object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.windowController.saveScratchpad()
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
