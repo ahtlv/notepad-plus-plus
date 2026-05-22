@@ -3,12 +3,19 @@ import UniformTypeIdentifiers
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var windowController: NotepadWindowController!
+    private var autocorrectMenuItem: NSMenuItem!
+
+    private var isAutocorrectEnabled: Bool {
+        get { UserDefaults.standard.object(forKey: "autocorrect") as? Bool ?? true }
+        set { UserDefaults.standard.set(newValue, forKey: "autocorrect") }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMainMenu()
         windowController = NotepadWindowController()
         windowController.showWindow(nil)
         windowController.loadScratchpad()
+        applyAutocorrect(isAutocorrectEnabled)
         NSApp.activate(ignoringOtherApps: true)
 
         NotificationCenter.default.addObserver(
@@ -68,8 +75,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         editMenu.addItem(NSMenuItem(title: "Copy",       action: #selector(NSText.copy(_:)),      keyEquivalent: "c"))
         editMenu.addItem(NSMenuItem(title: "Paste",      action: #selector(NSText.paste(_:)),     keyEquivalent: "v"))
         editMenu.addItem(NSMenuItem(title: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a"))
+        editMenu.addItem(.separator())
+        let acItem = NSMenuItem(title: "Autocorrect", action: #selector(toggleAutocorrect(_:)), keyEquivalent: "")
+        acItem.state = (UserDefaults.standard.object(forKey: "autocorrect") as? Bool ?? true) ? .on : .off
+        editMenu.addItem(acItem)
+        autocorrectMenuItem = acItem
 
         NSApp.mainMenu = mainMenu
+    }
+
+    private func applyAutocorrect(_ enabled: Bool) {
+        let tv = windowController.textView!
+        tv.isAutomaticSpellingCorrectionEnabled = enabled
+        tv.isAutomaticQuoteSubstitutionEnabled = enabled
+        autocorrectMenuItem.state = enabled ? .on : .off
+    }
+
+    @objc func toggleAutocorrect(_ sender: Any?) {
+        isAutocorrectEnabled = !isAutocorrectEnabled
+        applyAutocorrect(isAutocorrectEnabled)
     }
 
     // MARK: - File actions
