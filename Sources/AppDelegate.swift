@@ -106,7 +106,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func saveDocument(_ sender: Any?) {
         let wc = windowController!
         if wc.currentFileURL != nil {
-            wc.saveCurrentFile()
+            if !wc.saveCurrentFile() {
+                let alert = NSAlert()
+                alert.messageText = "Could not save file"
+                alert.informativeText = "The file could not be saved. Check disk space and permissions."
+                alert.alertStyle = .warning
+                alert.runModal()
+            }
         } else {
             saveDocumentAs(sender)
         }
