@@ -32,7 +32,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
 
         let contentSize = scrollView.contentSize
         let textView = NSTextView(frame: NSRect(origin: .zero, size: contentSize))
-        textView.minSize = NSSize(width: 0, height: contentSize.height)
+        textView.minSize = NSSize(width: 0, height: 0)
         textView.maxSize = NSSize(
             width: CGFloat.greatestFiniteMagnitude,
             height: CGFloat.greatestFiniteMagnitude
@@ -51,6 +51,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
         textView.isContinuousSpellCheckingEnabled = true
         textView.font = NSFont.systemFont(ofSize: 14)
         textView.textContainerInset = NSSize(width: 16, height: 16)
+        textView.textContainer?.lineFragmentPadding = 0
         textView.delegate = self
 
         scrollView.documentView = textView
@@ -81,7 +82,17 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
         if currentFileURL == nil {
             ScratchStore.shared.save(textView.string)
         }
-        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return }
+        let text: String
+        do {
+            text = try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Could not open file"
+            alert.informativeText = error.localizedDescription
+            alert.alertStyle = .warning
+            alert.runModal()
+            return
+        }
         currentFileURL = url
         textView.string = text
         window?.title = url.lastPathComponent
@@ -109,7 +120,13 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
             window?.title = url.lastPathComponent
             window?.isDocumentEdited = false
             hasUnsavedChanges = false
-        } catch {}
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Could not save file"
+            alert.informativeText = error.localizedDescription
+            alert.alertStyle = .warning
+            alert.runModal()
+        }
     }
 
     // MARK: - Unsaved changes
@@ -135,8 +152,10 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
     // MARK: - NSWindowDelegate
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        saveScratchpad()
-        guard currentFileURL != nil else { return true }
+        if currentFileURL == nil {
+            ScratchStore.shared.save(textView.string)
+            return true
+        }
         switch promptForUnsavedChanges() {
         case .save:    return saveCurrentFile()
         case .discard: return true
