@@ -146,7 +146,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func showAbout(_ sender: Any?) {
         NSApp.orderFrontStandardAboutPanel(options: [
             .applicationName: "Notepad++",
-            .applicationVersion: "1.1.0",
+            .applicationVersion: "1.2.0",
             .credits: NSAttributedString(
                 string: "Minimal native macOS text editor.\nBuilt with Swift and AppKit — no Xcode required.",
                 attributes: [.font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)]

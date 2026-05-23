@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-23
+
+### Added
+- About Notepad++ panel (App menu → About Notepad++)
+- Multi-window support — opening a file from Finder or File → Open spawns a new window
+- New windows cascade 22pt from the previous one
+- Cmd+N opens a new empty window
+
+### Fixed
+- Window title now correctly shows "Notepad++" in all states
+
 ## [1.1.0] - 2026-05-23
 
 ### Added
