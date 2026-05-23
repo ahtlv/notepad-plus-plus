@@ -12,7 +12,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
             backing: .buffered,
             defer: false
         )
-        window.title = "Notepad"
+        window.title = "Notepad++"
         window.minSize = NSSize(width: 400, height: 300)
         window.center()
         self.init(window: window)
@@ -63,7 +63,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
     func loadScratchpad() {
         currentFileURL = nil
         textView.string = ScratchStore.shared.load()
-        window?.title = "Notepad"
+        window?.title = "Notepad++"
         window?.isDocumentEdited = false
         hasUnsavedChanges = false
     }

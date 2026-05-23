@@ -92,7 +92,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let appMenu = NSMenu()
         appItem.submenu = appMenu
         appMenu.addItem(NSMenuItem(
-            title: "Quit Notepad",
+            title: "About Notepad++",
+            action: #selector(showAbout(_:)),
+            keyEquivalent: ""
+        ))
+        appMenu.addItem(.separator())
+        appMenu.addItem(NSMenuItem(
+            title: "Quit Notepad++",
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         ))
@@ -135,6 +141,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             $0.textView.isAutomaticQuoteSubstitutionEnabled = enabled
         }
         autocorrectMenuItem.state = enabled ? .on : .off
+    }
+
+    @objc func showAbout(_ sender: Any?) {
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .applicationName: "Notepad++",
+            .applicationVersion: "1.1.0",
+            .credits: NSAttributedString(
+                string: "Minimal native macOS text editor.\nBuilt with Swift and AppKit — no Xcode required.",
+                attributes: [.font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize)]
+            ),
+        ])
     }
 
     @objc func toggleAutocorrect(_ sender: Any?) {
