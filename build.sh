@@ -19,6 +19,7 @@ swiftc Sources/*.swift \
     -framework Foundation
 
 cp Resources/Info.plist "$APP_DIR/Info.plist"
+cp Resources/AppIcon.icns "$APP_DIR/Resources/AppIcon.icns"
 
 echo "✅ Built: $BUILD_DIR/$APP_NAME.app"
 echo "   To install: cp -r $BUILD_DIR/$APP_NAME.app /Applications/"

@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 class AppDelegate: NSObject, NSApplicationDelegate {
     var windowController: NotepadWindowController!
     private var autocorrectMenuItem: NSMenuItem!
+    private var pendingFileURL: URL?
 
     private var isAutocorrectEnabled: Bool {
         get { UserDefaults.standard.object(forKey: "autocorrect") as? Bool ?? true }
@@ -14,7 +15,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupMainMenu()
         windowController = NotepadWindowController()
         windowController.showWindow(nil)
-        windowController.loadScratchpad()
+        if let url = pendingFileURL {
+            windowController.loadFile(url: url)
+            pendingFileURL = nil
+        } else {
+            windowController.loadScratchpad()
+        }
         applyAutocorrect(isAutocorrectEnabled)
         NSApp.activate(ignoringOtherApps: true)
 
@@ -96,6 +102,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         applyAutocorrect(isAutocorrectEnabled)
     }
 
+    // MARK: - Open from Finder / drag-and-drop
+
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        let url = URL(fileURLWithPath: filename)
+        if windowController != nil {
+            windowController.loadFile(url: url)
+        } else {
+            pendingFileURL = url
+        }
+        return true
+    }
+
     // MARK: - File actions
 
     @objc func newDocument(_ sender: Any?) {
@@ -151,8 +169,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func saveDocumentAs(_ sender: Any?) {
         let panel = NSSavePanel()
-        panel.allowedContentTypes = [.plainText]
-        panel.nameFieldStringValue = windowController.currentFileURL?.lastPathComponent ?? "untitled.txt"
+        panel.allowedContentTypes = [UTType(filenameExtension: "txt") ?? .plainText]
+        panel.isExtensionHidden = false
+        panel.nameFieldStringValue = windowController.currentFileURL?.lastPathComponent ?? "untitled"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         windowController.saveFileAs(url: url)
     }
