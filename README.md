@@ -1,6 +1,6 @@
 # Notepad++
 
-A minimal native macOS text editor built with Swift and AppKit — no Xcode required.
+A minimal native macOS text editor built with Swift and AppKit — no Xcode required. Made for work and fun :))
 
 ![macOS](https://img.shields.io/badge/macOS-13%2B-black)
 ![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange)
