@@ -21,5 +21,19 @@ swiftc Sources/*.swift \
 cp Resources/Info.plist "$APP_DIR/Info.plist"
 cp Resources/AppIcon.icns "$APP_DIR/Resources/AppIcon.icns"
 
+echo "🧪 Running tests..."
+
+swiftc Tests/test_scratch_store.swift \
+    Sources/ScratchStore.swift \
+    -o "$BUILD_DIR/test_scratch" 2>&1
+"$BUILD_DIR/test_scratch"
+
+swiftc Tests/test_window_controller.swift \
+    Sources/NotepadWindowController.swift \
+    Sources/ScratchStore.swift \
+    -o "$BUILD_DIR/test_window_controller" \
+    -framework AppKit -framework Foundation 2>&1
+"$BUILD_DIR/test_window_controller"
+
 echo "✅ Built: $BUILD_DIR/$APP_NAME.app"
 echo "   To install: cp -r $BUILD_DIR/$APP_NAME.app /Applications/"

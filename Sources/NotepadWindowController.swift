@@ -15,7 +15,6 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
         window.title = "Notepad"
         window.minSize = NSSize(width: 400, height: 300)
         window.center()
-        window.setFrameAutosaveName("NotepadWindow")
         self.init(window: window)
         window.delegate = self
         setupTextView()

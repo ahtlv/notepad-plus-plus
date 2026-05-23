@@ -2,7 +2,7 @@ import AppKit
 import UniformTypeIdentifiers
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var windowController: NotepadWindowController!
+    private var windowControllers: [NotepadWindowController] = []
     private var autocorrectMenuItem: NSMenuItem!
     private var pendingFileURL: URL?
 
@@ -13,13 +13,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMainMenu()
-        windowController = NotepadWindowController()
-        windowController.showWindow(nil)
+        let wc = spawnWindow()
         if let url = pendingFileURL {
-            windowController.loadFile(url: url)
+            wc.loadFile(url: url)
             pendingFileURL = nil
         } else {
-            windowController.loadScratchpad()
+            wc.loadScratchpad()
         }
         applyAutocorrect(isAutocorrectEnabled)
         NSApp.activate(ignoringOtherApps: true)
@@ -28,15 +27,58 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             forName: NSApplication.didResignActiveNotification,
             object: nil, queue: .main
         ) { [weak self] _ in
-            self?.windowController.saveScratchpad()
+            self?.windowControllers.forEach { $0.saveScratchpad() }
         }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        windowController.saveScratchpad()
+        windowControllers.forEach { $0.saveScratchpad() }
     }
 
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+
+    // MARK: - Window management
+
+    @discardableResult
+    private func spawnWindow() -> NotepadWindowController {
+        let wc = NotepadWindowController()
+        windowControllers.append(wc)
+        wc.showWindow(nil)
+
+        if windowControllers.count == 1 {
+            wc.window?.setFrameAutosaveName("NotepadMainWindow")
+        } else if let prev = windowControllers.dropLast().last?.window,
+                  let cur = wc.window {
+            let o: CGFloat = 22
+            cur.setFrameOrigin(NSPoint(x: prev.frame.origin.x + o,
+                                       y: prev.frame.origin.y - o))
+        }
+
+        wc.textView.isAutomaticSpellingCorrectionEnabled = isAutocorrectEnabled
+        wc.textView.isAutomaticQuoteSubstitutionEnabled = isAutocorrectEnabled
+        NotificationCenter.default.addObserver(
+            forName: NSWindow.willCloseNotification,
+            object: wc.window,
+            queue: .main
+        ) { [weak self, weak wc] _ in
+            self?.windowControllers.removeAll { $0 === wc }
+        }
+        return wc
+    }
+
+    private var keyWC: NotepadWindowController? {
+        windowControllers.first { $0.window?.isKeyWindow == true } ?? windowControllers.last
+    }
+
+    // MARK: - Open from Finder / drag-and-drop
+
+    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
+        let url = URL(fileURLWithPath: filename)
+        guard !windowControllers.isEmpty else {
+            pendingFileURL = url
+            return true
+        }
+        spawnWindow().loadFile(url: url)
         return true
     }
 
@@ -45,7 +87,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupMainMenu() {
         let mainMenu = NSMenu()
 
-        // App menu (первый элемент — имя приложения в menu bar)
         let appItem = NSMenuItem()
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
@@ -56,7 +97,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             keyEquivalent: "q"
         ))
 
-        // File menu
         let fileItem = NSMenuItem()
         mainMenu.addItem(fileItem)
         let fileMenu = NSMenu(title: "File")
@@ -69,7 +109,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         saveAs.keyEquivalentModifierMask = [.command, .shift]
         fileMenu.addItem(saveAs)
 
-        // Edit menu
         let editItem = NSMenuItem()
         mainMenu.addItem(editItem)
         let editMenu = NSMenu(title: "Edit")
@@ -83,7 +122,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         editMenu.addItem(NSMenuItem(title: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a"))
         editMenu.addItem(.separator())
         let acItem = NSMenuItem(title: "Autocorrect", action: #selector(toggleAutocorrect(_:)), keyEquivalent: "")
-        acItem.state = (UserDefaults.standard.object(forKey: "autocorrect") as? Bool ?? true) ? .on : .off
+        acItem.state = isAutocorrectEnabled ? .on : .off
         editMenu.addItem(acItem)
         autocorrectMenuItem = acItem
 
@@ -91,9 +130,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func applyAutocorrect(_ enabled: Bool) {
-        let tv = windowController.textView!
-        tv.isAutomaticSpellingCorrectionEnabled = enabled
-        tv.isAutomaticQuoteSubstitutionEnabled = enabled
+        windowControllers.forEach {
+            $0.textView.isAutomaticSpellingCorrectionEnabled = enabled
+            $0.textView.isAutomaticQuoteSubstitutionEnabled = enabled
+        }
         autocorrectMenuItem.state = enabled ? .on : .off
     }
 
@@ -102,58 +142,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         applyAutocorrect(isAutocorrectEnabled)
     }
 
-    // MARK: - Open from Finder / drag-and-drop
-
-    func application(_ sender: NSApplication, openFile filename: String) -> Bool {
-        let url = URL(fileURLWithPath: filename)
-        if windowController != nil {
-            windowController.loadFile(url: url)
-        } else {
-            pendingFileURL = url
-        }
-        return true
-    }
-
     // MARK: - File actions
 
     @objc func newDocument(_ sender: Any?) {
-        let wc = windowController!
-        guard wc.currentFileURL != nil else {
-            wc.loadScratchpad()
-            return
-        }
-        switch wc.promptForUnsavedChanges() {
-        case .save:
-            if !wc.saveCurrentFile() { return }
-            wc.loadScratchpad()
-        case .discard:
-            wc.loadScratchpad()
-        case .cancel:
-            return
-        }
+        spawnWindow()
     }
 
     @objc func openDocument(_ sender: Any?) {
-        let wc = windowController!
-        if wc.currentFileURL != nil {
-            switch wc.promptForUnsavedChanges() {
-            case .save:
-                if !wc.saveCurrentFile() { return }
-            case .discard: break
-            case .cancel:  return
-            }
-        }
         let panel = NSOpenPanel()
-        panel.allowedContentTypes = [.plainText]
+        panel.allowedContentTypes = [UTType(filenameExtension: "txt") ?? .plainText]
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        wc.loadFile(url: url)
+        spawnWindow().loadFile(url: url)
     }
 
     @objc func saveDocument(_ sender: Any?) {
-        let wc = windowController!
+        guard let wc = keyWC else { return }
         if wc.currentFileURL != nil {
             if !wc.saveCurrentFile() {
                 let alert = NSAlert()
@@ -168,11 +174,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func saveDocumentAs(_ sender: Any?) {
+        guard let wc = keyWC else { return }
         let panel = NSSavePanel()
         panel.allowedContentTypes = [UTType(filenameExtension: "txt") ?? .plainText]
         panel.isExtensionHidden = false
-        panel.nameFieldStringValue = windowController.currentFileURL?.lastPathComponent ?? "untitled"
+        panel.nameFieldStringValue = wc.currentFileURL?.lastPathComponent ?? "untitled"
         guard panel.runModal() == .OK, let url = panel.url else { return }
-        windowController.saveFileAs(url: url)
+        wc.saveFileAs(url: url)
     }
 }
