@@ -30,6 +30,7 @@ swiftc Tests/test_scratch_store.swift \
 
 swiftc Tests/test_window_controller.swift \
     Sources/NotepadWindowController.swift \
+    Sources/NotepadTextView.swift \
     Sources/ScratchStore.swift \
     -o "$BUILD_DIR/test_window_controller" \
     -framework AppKit -framework Foundation 2>&1

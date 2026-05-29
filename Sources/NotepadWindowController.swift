@@ -1,7 +1,7 @@
 import AppKit
 
 class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewDelegate {
-    private(set) var textView: NSTextView!
+    private(set) var textView: NotepadTextView!
     var currentFileURL: URL?
     private(set) var hasUnsavedChanges = false
 
@@ -30,7 +30,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
         scrollView.borderType = .noBorder
 
         let contentSize = scrollView.contentSize
-        let textView = NSTextView(frame: NSRect(origin: .zero, size: contentSize))
+        let textView = NotepadTextView(frame: NSRect(origin: .zero, size: contentSize))
         textView.minSize = NSSize(width: 0, height: 0)
         textView.maxSize = NSSize(
             width: CGFloat.greatestFiniteMagnitude,
@@ -45,6 +45,7 @@ class NotepadWindowController: NSWindowController, NSWindowDelegate, NSTextViewD
         textView.textContainer?.widthTracksTextView = true
 
         textView.isRichText = false
+        textView.allowsUndo = true
         textView.isAutomaticSpellingCorrectionEnabled = true
         textView.isAutomaticQuoteSubstitutionEnabled = true
         textView.isContinuousSpellCheckingEnabled = true
