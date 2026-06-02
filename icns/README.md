@@ -3,7 +3,7 @@
 Исходник: `notepad.png` (минимум 1024×1024 px).
 
 ```bash
-cd /Users/anatoli/Work/notepad++/icns
+cd /Users/anatoli/Work/notepad-plus-plus/icns/
 
 mkdir AppIcon.iconset
 
